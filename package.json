@@ -1,0 +1,30 @@
+{
+  "name": "blog-post-project-api",
+  "version": "1.0.0",
+  "description": "API Server for hh. website",
+  "type": "module",
+  "main": "app.mjs",
+  "scripts": {
+    "start": "node app.mjs",
+    "dev": "nodemon app.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bestnp/blog-post-project-api.git"
+  },
+  "keywords": ["express", "api", "hh"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bestnp/blog-post-project-api/issues"
+  },
+  "homepage": "https://github.com/bestnp/blog-post-project-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
