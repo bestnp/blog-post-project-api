@@ -35,7 +35,8 @@ app.listen(PORT, () => {
   console.log(`\n📝 Blog Posts:`);
   console.log(`   GET    /assignments          - Get all blog posts`);
   console.log(`   GET    /assignments/:id      - Get single blog post`);
-  console.log(`   POST   /assignments          - Create new blog post`);
+  console.log(`   POST   /assignments          - Create new blog post (with image URL)`);
+  console.log(`   POST   /assignments/upload   - Create post with file upload (protected)`);
   console.log(`   PUT    /assignments/:id      - Update blog post`);
   console.log(`   DELETE /assignments/:id      - Delete blog post`);
   console.log(`\n👤 Other:`);
