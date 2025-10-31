@@ -1,5 +1,4 @@
-import pkg from 'pg';
-const { Pool } = pkg;
+import { Pool } from 'pg';
 
 // Create a connection pool to Supabase
 const pool = new Pool({
@@ -14,7 +13,7 @@ pool.on('connect', () => {
   console.log('✅ Connected to Supabase database');
 });
 
-pool.on('error', (err) => {
+pool.on('error', (err: Error) => {
   console.error('❌ Database connection error:', err);
 });
 

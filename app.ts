@@ -1,7 +1,8 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
-import pool from './utils/db.mjs';
+import pool from './utils/db';
+import { User, CreatePostInput, UpdatePostInput, PostWithDetails } from './types';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Mock Data
-const users = [
+const users: User[] = [
   {
     id: 1,
     name: "john",
@@ -26,7 +27,7 @@ const users = [
  * GET /profiles
  * Response: 200 - { data: { name: "john", age: 20 } }
  */
-app.get('/profiles', (req, res) => {
+app.get('/profiles', (req: Request, res: Response) => {
   try {
     const user = users.find(u => u.name === 'john');
     
@@ -56,7 +57,7 @@ app.get('/profiles', (req, res) => {
  *   200 - { data: [...posts] }
  *   500 - { message: "Server could not read post because database connection" }
  */
-app.get('/assignments', async (req, res) => {
+app.get('/assignments', async (req: Request, res: Response) => {
   try {
     const query = `
       SELECT 
@@ -99,7 +100,7 @@ app.get('/assignments', async (req, res) => {
  *   404 - { message: "Server could not find a requested post" }
  *   500 - { message: "Server could not read post because database connection" }
  */
-app.get('/assignments/:id', async (req, res) => {
+app.get('/assignments/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -151,7 +152,7 @@ app.get('/assignments/:id', async (req, res) => {
  *   400 - { message: "Server could not create post because there are missing data from client" }
  *   500 - { message: "Server could not create post because database connection" }
  */
-app.post('/assignments', async (req, res) => {
+app.post('/assignments', async (req: Request<{}, {}, CreatePostInput>, res: Response) => {
   try {
     const { title, image, category_id, description, content, status_id } = req.body;
 
@@ -194,7 +195,7 @@ app.post('/assignments', async (req, res) => {
  *   404 - { message: "Server could not find a requested post to update" }
  *   500 - { message: "Server could not update post because database connection" }
  */
-app.put('/assignments/:id', async (req, res) => {
+app.put('/assignments/:id', async (req: Request<{ id: string }, {}, UpdatePostInput>, res: Response) => {
   try {
     const { id } = req.params;
     const { title, image, category_id, description, content, status_id } = req.body;
@@ -252,7 +253,7 @@ app.put('/assignments/:id', async (req, res) => {
  *   404 - { message: "Server could not find a requested post to delete" }
  *   500 - { message: "Server could not delete post because database connection" }
  */
-app.delete('/assignments/:id', async (req, res) => {
+app.delete('/assignments/:id', async (req: Request<{ id: string }>, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -287,7 +288,7 @@ app.delete('/assignments/:id', async (req, res) => {
  * Health check endpoint
  * Response: 200 - { status: "OK", message: "Server is running" }
  */
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ 
     status: 'OK', 
     message: 'Server is running' 
@@ -295,7 +296,7 @@ app.get('/health', (req, res) => {
 });
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: 'Endpoint not found'
   });
@@ -315,3 +316,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+
