@@ -51,3 +51,44 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+// Authentication Types
+export interface RegisterInput {
+  email: string;
+  password: string;
+  username?: string;
+  name?: string;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  username?: string;
+  name?: string;
+  role?: string;
+  created_at?: string;
+}
+
+export interface AuthResponse {
+  user: AuthUser | null;
+  session: {
+    access_token: string;
+    refresh_token: string;
+    expires_at?: number;
+  } | null;
+  message?: string;
+}
+
+// Express Request with User
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthUser;
+    }
+  }
+}
+

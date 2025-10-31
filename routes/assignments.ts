@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import pool from '../utils/db';
 import { CreatePostInput, UpdatePostInput } from '../types';
 import { validatePost } from '../validators/postValidator';
+import protectUser from '../middleware/protectUser';
+import protectAdmin from '../middleware/protectAdmin';
 
 const router = Router();
 
@@ -93,9 +95,9 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
 
 /**
  * POST /assignments
- * Create a new blog post
+ * Create a new blog post (Protected - requires authentication)
  */
-router.post('/', validatePost, async (req: Request<{}, {}, CreatePostInput>, res: Response) => {
+router.post('/', protectUser, validatePost, async (req: Request<{}, {}, CreatePostInput>, res: Response) => {
   try {
     const { title, image, category_id, description, content, status_id } = req.body;
 
@@ -122,9 +124,9 @@ router.post('/', validatePost, async (req: Request<{}, {}, CreatePostInput>, res
 
 /**
  * PUT /assignments/:id
- * Update a blog post by ID
+ * Update a blog post by ID (Protected - requires authentication)
  */
-router.put('/:id', validatePost, async (req: Request<{ id: string }, {}, UpdatePostInput>, res: Response) => {
+router.put('/:id', protectUser, validatePost, async (req: Request<{ id: string }, {}, UpdatePostInput>, res: Response) => {
   try {
     const { id } = req.params;
     const { title, image, category_id, description, content, status_id } = req.body;

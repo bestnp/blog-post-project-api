@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const db_1 = __importDefault(require("../utils/db"));
 const postValidator_1 = require("../validators/postValidator");
+const protectUser_1 = __importDefault(require("../middleware/protectUser"));
 const router = (0, express_1.Router)();
 /**
  * GET /assignments
@@ -87,9 +88,9 @@ router.get('/:id', async (req, res) => {
 });
 /**
  * POST /assignments
- * Create a new blog post
+ * Create a new blog post (Protected - requires authentication)
  */
-router.post('/', postValidator_1.validatePost, async (req, res) => {
+router.post('/', protectUser_1.default, postValidator_1.validatePost, async (req, res) => {
     try {
         const { title, image, category_id, description, content, status_id } = req.body;
         const query = `
@@ -112,9 +113,9 @@ router.post('/', postValidator_1.validatePost, async (req, res) => {
 });
 /**
  * PUT /assignments/:id
- * Update a blog post by ID
+ * Update a blog post by ID (Protected - requires authentication)
  */
-router.put('/:id', postValidator_1.validatePost, async (req, res) => {
+router.put('/:id', protectUser_1.default, postValidator_1.validatePost, async (req, res) => {
     try {
         const { id } = req.params;
         const { title, image, category_id, description, content, status_id } = req.body;

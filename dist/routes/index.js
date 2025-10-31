@@ -7,8 +7,10 @@ const express_1 = require("express");
 const assignments_1 = __importDefault(require("./assignments"));
 const profiles_1 = __importDefault(require("./profiles"));
 const health_1 = __importDefault(require("./health"));
+const auth_1 = __importDefault(require("./auth"));
 const router = (0, express_1.Router)();
 // Mount routes
+router.use('/auth', auth_1.default);
 router.use('/assignments', assignments_1.default);
 router.use('/profiles', profiles_1.default);
 router.use('/health', health_1.default);
