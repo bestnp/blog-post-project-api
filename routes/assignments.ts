@@ -1,11 +1,26 @@
 import { Router, Request, Response } from 'express';
+import multer from 'multer';
 import pool from '../utils/db';
+import { supabase } from '../utils/db';
 import { CreatePostInput, UpdatePostInput } from '../types';
 import { validatePost } from '../validators/postValidator';
 import protectUser from '../middleware/protectUser';
 import protectAdmin from '../middleware/protectAdmin';
 
 const router = Router();
+
+// Configure Multer for file upload
+const multerUpload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Define file upload fields
+const imageFileUpload = multerUpload.fields([
+  { name: 'imageFile', maxCount: 1 }
+]);
 
 /**
  * GET /assignments
@@ -165,6 +180,86 @@ router.put('/:id', protectUser, validatePost, async (req: Request<{ id: string }
     console.error('Database error:', error);
     res.status(500).json({
       message: 'Server could not update post because database connection'
+    });
+  }
+});
+
+/**
+ * POST /assignments/upload
+ * Create a new blog post with file upload (Protected - requires authentication)
+ */
+router.post('/upload', imageFileUpload, protectUser, async (req: Request, res: Response) => {
+  try {
+    // 1) รับข้อมูลจาก request body และไฟล์ที่อัปโหลด
+    const newPost = req.body;
+    
+    // Check if file exists
+    if (!req.files || !('imageFile' in req.files) || !req.files.imageFile || req.files.imageFile.length === 0) {
+      return res.status(400).json({
+        error: 'Image file is required'
+      });
+    }
+
+    const file = (req.files as { [fieldname: string]: Express.Multer.File[] }).imageFile[0];
+
+    // Validate required fields
+    if (!newPost.title || !newPost.category_id || !newPost.description || !newPost.content || !newPost.status_id) {
+      return res.status(400).json({
+        error: 'All fields are required: title, category_id, description, content, status_id'
+      });
+    }
+
+    // 2) กำหนด bucket และ path ที่จะเก็บไฟล์ใน Supabase
+    const bucketName = 'my-personal-blog';
+    const filePath = `posts/${Date.now()}_${file.originalname}`;
+
+    // 3) อัปโหลดไฟล์ไปยัง Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(filePath, file.buffer, {
+        contentType: file.mimetype,
+        upsert: false // ป้องกันการเขียนทับไฟล์เดิม
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      return res.status(500).json({
+        error: 'Failed to upload image to storage',
+        message: uploadError.message
+      });
+    }
+
+    // 4) ดึง URL สาธารณะของไฟล์ที่อัปโหลด
+    const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(uploadData.path);
+
+    // 5) บันทึกข้อมูลโพสต์ลงในฐานข้อมูล
+    const query = `
+      INSERT INTO posts (title, image, category_id, description, content, status_id)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *
+    `;
+    const values = [
+      newPost.title,
+      publicUrl, // เก็บ URL ของรูปภาพ
+      parseInt(newPost.category_id),
+      newPost.description,
+      newPost.content,
+      parseInt(newPost.status_id)
+    ];
+    
+    await pool.query(query, values);
+
+    // 6) ส่งผลลัพธ์กลับไปยัง client
+    res.status(201).json({
+      message: 'Created post successfully',
+      imageUrl: publicUrl
+    });
+
+  } catch (error) {
+    console.error('Upload post error:', error);
+    res.status(500).json({
+      error: 'Server could not create post',
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
