@@ -7,6 +7,7 @@ require("dotenv/config");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const db_1 = __importDefault(require("./utils/db"));
+const postValidator_1 = require("./validators/postValidator");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 // Middleware
@@ -138,18 +139,12 @@ app.get('/assignments/:id', async (req, res) => {
  * Body: { title, image, category_id, description, content, status_id }
  * Response:
  *   201 - { message: "Created post successfully" }
- *   400 - { message: "Server could not create post because there are missing data from client" }
+ *   400 - { message: "Validation failed", errors: [...] }
  *   500 - { message: "Server could not create post because database connection" }
  */
-app.post('/assignments', async (req, res) => {
+app.post('/assignments', postValidator_1.validatePost, async (req, res) => {
     try {
         const { title, image, category_id, description, content, status_id } = req.body;
-        // Validate required fields
-        if (!title || !image || !category_id || !description || !content || !status_id) {
-            return res.status(400).json({
-                message: 'Server could not create post because there are missing data from client'
-            });
-        }
         // Insert into database
         const query = `
       INSERT INTO posts (title, image, category_id, description, content, status_id)
@@ -175,20 +170,14 @@ app.post('/assignments', async (req, res) => {
  * Body: { title, image, category_id, description, content, status_id }
  * Response:
  *   200 - { message: "Updated post successfully" }
- *   400 - { message: "Server could not update post because there are missing data from client" }
+ *   400 - { message: "Validation failed", errors: [...] }
  *   404 - { message: "Server could not find a requested post to update" }
  *   500 - { message: "Server could not update post because database connection" }
  */
-app.put('/assignments/:id', async (req, res) => {
+app.put('/assignments/:id', postValidator_1.validatePost, async (req, res) => {
     try {
         const { id } = req.params;
         const { title, image, category_id, description, content, status_id } = req.body;
-        // Validate required fields
-        if (!title || !image || !category_id || !description || !content || !status_id) {
-            return res.status(400).json({
-                message: 'Server could not update post because there are missing data from client'
-            });
-        }
         // Check if post exists
         const checkQuery = 'SELECT id FROM posts WHERE id = $1';
         const checkResult = await db_1.default.query(checkQuery, [id]);
