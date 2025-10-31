@@ -23,10 +23,13 @@
 
 ## ✨ Features
 
-- ✅ **TypeScript** - Full type safety
+- ✅ **TypeScript** - Full type safety, 100% TS deployment
 - ✅ **Express Router** - Modular route architecture
+- ✅ **Authentication** - JWT-based auth with Supabase
+- ✅ **Authorization** - Role-based access control (Admin/User)
 - ✅ **Validation** - Comprehensive input validation
-- ✅ **Database** - PostgreSQL with Supabase
+- ✅ **Database** - Dual PostgreSQL with Supabase
+- ✅ **File Upload** - Supabase Storage integration
 - ✅ **CORS** - Cross-origin resource sharing enabled
 - ✅ **Error Handling** - Proper error responses
 - ✅ **RESTful API** - Standard REST conventions
@@ -38,9 +41,13 @@
 - **Runtime:** Node.js 20+
 - **Framework:** Express.js 5.1
 - **Language:** TypeScript 5.9
-- **Database:** PostgreSQL (Supabase)
+- **Database:** PostgreSQL (Supabase) - Dual databases
+- **Authentication:** Supabase Auth (JWT)
+- **Storage:** Supabase Storage
+- **File Upload:** Multer
 - **Validation:** Custom middleware
 - **Development:** ts-node-dev
+- **Deployment:** Vercel (TypeScript-native)
 
 ---
 
@@ -66,13 +73,29 @@ Create a `.env` file in the root directory:
 ```env
 PORT=3001
 NODE_ENV=development
+
+# Blog Posts Database
 DATABASE_URL=postgresql://user:password@host:port/database
+
+# Authentication Database
+AUTH_DATABASE_URL=postgresql://user:password@host:port/database
+
+# Supabase Client
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_key
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:3000
 ```
 
 **Environment Variables:**
 - `PORT` - Server port (default: 3001)
 - `NODE_ENV` - Environment (development/production)
-- `DATABASE_URL` - PostgreSQL connection string
+- `DATABASE_URL` - PostgreSQL connection for blog posts
+- `AUTH_DATABASE_URL` - PostgreSQL connection for authentication
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `FRONTEND_URL` - Frontend URL for CORS
 
 ---
 
@@ -99,13 +122,28 @@ npm start
 ```
 🚀 Server is running on http://localhost:3001
 📋 API Endpoints:
-   GET    /profiles        - Get John's profile
-   GET    /assignments     - Get all blog posts
-   GET    /assignments/:id - Get single blog post
-   POST   /assignments     - Create new blog post
-   PUT    /assignments/:id - Update blog post
-   DELETE /assignments/:id - Delete blog post
-   GET    /health          - Health check
+
+🔐 Authentication:
+   POST   /auth/register        - Register new user
+   POST   /auth/login           - Login user
+   POST   /auth/logout          - Logout user (protected)
+   GET    /auth/me              - Get current user (protected)
+   POST   /auth/refresh         - Refresh access token
+   POST   /auth/forgot-password - Request password reset
+   POST   /auth/reset-password  - Reset password with token
+   PUT    /auth/reset-password  - Change password (protected)
+
+📝 Blog Posts:
+   GET    /assignments          - Get all blog posts
+   GET    /assignments/:id      - Get single blog post
+   POST   /assignments          - Create new blog post (with image URL)
+   POST   /assignments/upload   - Create post with file upload (protected)
+   PUT    /assignments/:id      - Update blog post
+   DELETE /assignments/:id      - Delete blog post
+
+👤 Other:
+   GET    /profiles             - Get John's profile
+   GET    /health               - Health check
 ```
 
 ---
@@ -304,16 +342,21 @@ blog-post-project-api/
 ├── app.ts                      # Main application
 ├── routes/                     # Route modules
 │   ├── index.ts                # Main router
+│   ├── auth.ts                 # Authentication routes
 │   ├── assignments.ts          # Blog posts routes
 │   ├── profiles.ts             # Profiles routes
 │   └── health.ts               # Health check route
+├── middleware/                 # Middleware
+│   ├── auth.ts                 # Auth middleware
+│   ├── protectUser.ts          # User protection
+│   └── protectAdmin.ts         # Admin protection
 ├── validators/                 # Validation middleware
 │   └── postValidator.ts        # Post validation
 ├── types/                      # TypeScript types
 │   └── index.ts                # Type definitions
 ├── utils/                      # Utility functions
 │   └── db.ts                   # Database connection
-├── dist/                       # Compiled JavaScript
+├── vercel.json                 # Vercel config
 ├── tsconfig.json               # TypeScript config
 └── package.json                # Dependencies
 ```
@@ -322,8 +365,13 @@ blog-post-project-api/
 
 ## 📖 Documentation
 
+- **[API_ENDPOINTS.md](./API_ENDPOINTS.md)** - Complete API documentation
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Architecture overview and design patterns
+- **[AUTHENTICATION.md](./AUTHENTICATION.md)** - Authentication & authorization guide
+- **[MIDDLEWARE.md](./MIDDLEWARE.md)** - Middleware documentation
 - **[VALIDATION.md](./VALIDATION.md)** - Validation rules and error handling
+- **[UPLOAD.md](./UPLOAD.md)** - File upload guide
+- **[VERCEL_SETUP.md](./VERCEL_SETUP.md)** - Vercel deployment guide
 
 ---
 
@@ -380,19 +428,45 @@ curl -X DELETE http://localhost:3001/assignments/1
 
 ## 🚀 Deployment
 
-### Build for Production
+### Vercel Deployment (Recommended)
+
+This project is configured for **TypeScript-native** deployment on Vercel.
+
+**Configuration:**
+- ✅ `vercel.json` configured to use `app.ts`
+- ✅ No build step required
+- ✅ Automatic TypeScript compilation
+- ✅ 100% TypeScript codebase
+
+**Deploy Steps:**
+
+1. **Push to GitHub:**
+```bash
+git add .
+git commit -m "Ready for deployment"
+git push origin api-server
+```
+
+2. **Configure Vercel:**
+   - Connect repository to Vercel
+   - Add environment variables (see Configuration section)
+   - Deploy!
+
+3. **Environment Variables:**
+   Set all variables from `.env` in Vercel Dashboard
+
+**See:** [VERCEL_SETUP.md](./VERCEL_SETUP.md) for detailed instructions
+
+---
+
+### Local Production Build
 
 ```bash
 npm run build
+npm start
 ```
 
 Compiled files will be in `dist/` directory.
-
-### Start Production Server
-
-```bash
-npm start
-```
 
 ---
 
