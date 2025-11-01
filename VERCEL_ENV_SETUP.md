@@ -16,14 +16,16 @@ NODE_ENV=production
 
 ### **2. Blog Posts Database:**
 ```env
-DATABASE_URL=postgresql://postgres:_Blog%40post01@db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
+⚠️ **Important:** Use Connection Pooling (`pooler.supabase.com:6543`) for Vercel Serverless  
 > **Note:** `%40` is URL-encoded `@` symbol
 
 ### **3. Authentication Database:**
 ```env
-AUTH_DATABASE_URL=postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/postgres
+AUTH_DATABASE_URL=postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
+⚠️ **Important:** Use Connection Pooling (`pooler.supabase.com:6543`) for Vercel Serverless
 
 ### **4. Supabase (Auth + Storage):**
 ```env
