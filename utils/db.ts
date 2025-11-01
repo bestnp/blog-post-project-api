@@ -1,12 +1,22 @@
 import { Pool } from 'pg';
 import { createClient } from '@supabase/supabase-js';
 
+// Validate DATABASE_URL before creating pool
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL environment variable is not set!');
+}
+
 // PostgreSQL Connection Pool for Blog Posts Database
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  // Add connection timeout
+  connectionTimeoutMillis: 10000,
+  // Add max pool size
+  max: 20,
+  idleTimeoutMillis: 30000,
 });
 
 // Test connection
@@ -16,6 +26,12 @@ pool.on('connect', () => {
 
 pool.on('error', (err: Error) => {
   console.error('❌ Blog Posts database connection error:', err);
+  console.error('Error details:', {
+    message: err.message,
+    code: (err as any).code,
+    DATABASE_URL_set: !!process.env.DATABASE_URL,
+    DATABASE_URL_length: process.env.DATABASE_URL?.length || 0,
+  });
 });
 
 // PostgreSQL Connection Pool for Authentication Database

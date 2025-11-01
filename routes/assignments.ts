@@ -28,6 +28,53 @@ const imageFileUpload = multerUpload.fields([
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.error('❌ DATABASE_URL environment variable is not set');
+      return res.status(500).json({
+        message: 'Database configuration error: DATABASE_URL is not set',
+        error: 'Please configure DATABASE_URL environment variable',
+        debug: {
+          hasDATABASE_URL: !!process.env.DATABASE_URL,
+          envKeys: Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('SUPABASE'))
+        }
+      });
+    }
+
+    // Log connection info (without sensitive data)
+    const dbUrl = process.env.DATABASE_URL || '';
+    const dbInfo = dbUrl.split('@')[1] || 'unknown';
+    console.log('🔍 Attempting database connection to:', dbInfo.split('/')[0]);
+
+    // Test database connection first
+    try {
+      const testResult = await pool.query('SELECT NOW() as current_time');
+      console.log('✅ Database connection test successful at:', testResult.rows[0]?.current_time);
+    } catch (connectionError: any) {
+      console.error('❌ Database connection test failed');
+      console.error('Error details:', {
+        message: connectionError.message,
+        code: connectionError.code,
+        errno: connectionError.errno,
+        syscall: connectionError.syscall,
+        hostname: connectionError.hostname,
+        port: connectionError.port,
+      });
+      
+      return res.status(500).json({
+        message: 'Database connection failed',
+        error: connectionError.message,
+        code: connectionError.code,
+        hint: 'Please check DATABASE_URL environment variable and database server status',
+        debug: {
+          errorCode: connectionError.code,
+          errorMessage: connectionError.message,
+          hostname: connectionError.hostname || dbInfo.split('/')[0],
+          hasDATABASE_URL: !!process.env.DATABASE_URL,
+        }
+      });
+    }
+
     const query = `
       SELECT 
         p.id,
@@ -49,14 +96,61 @@ router.get('/', async (req: Request, res: Response) => {
     
     const result = await pool.query(query);
 
+    console.log(`✅ Successfully fetched ${result.rows.length} posts from database`);
+
     res.status(200).json({
       data: result.rows
     });
 
-  } catch (error) {
-    console.error('Database error:', error);
+  } catch (error: any) {
+    console.error('❌ Database query error:', error);
+    console.error('Full error details:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail,
+      hint: error.hint,
+      errno: error.errno,
+      syscall: error.syscall,
+      hostname: error.hostname,
+      port: error.port,
+      stack: error.stack?.split('\n')[0], // First line of stack trace only
+    });
+    
+    // Provide more specific error messages
+    let errorMessage = 'Server could not read post because database connection';
+    let errorHint = '';
+    
+    if (error.code === 'ECONNREFUSED') {
+      errorMessage = 'Database connection refused. Please check if database server is running.';
+      errorHint = 'The database server may be down or unreachable. Check Supabase dashboard.';
+    } else if (error.code === 'ENOTFOUND') {
+      errorMessage = 'Database host not found. Please check DATABASE_URL.';
+      errorHint = 'The database hostname in DATABASE_URL may be incorrect.';
+    } else if (error.code === '28P01') {
+      errorMessage = 'Database authentication failed. Please check database credentials.';
+      errorHint = 'Username or password in DATABASE_URL may be incorrect. Remember to use %40 for @ in password.';
+    } else if (error.code === '3D000') {
+      errorMessage = 'Database does not exist. Please check database name in DATABASE_URL.';
+      errorHint = 'The database name in DATABASE_URL may be incorrect.';
+    } else if (error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET') {
+      errorMessage = 'Database connection timeout. Server took too long to respond.';
+      errorHint = 'The database may be overloaded or network issues. Check Supabase status.';
+    } else if (error.message) {
+      errorMessage = `Database error: ${error.message}`;
+      errorHint = error.hint || 'Check database configuration and server status.';
+    }
+    
     res.status(500).json({
-      message: 'Server could not read post because database connection'
+      message: errorMessage,
+      error: error.message,
+      code: error.code,
+      hint: errorHint,
+      debug: process.env.NODE_ENV === 'development' ? {
+        code: error.code,
+        detail: error.detail,
+        hostname: error.hostname,
+        port: error.port,
+      } : undefined
     });
   }
 });
