@@ -7,7 +7,7 @@
 ## 📋 Overview
 
 **Base URL:** `http://localhost:3001`  
-**Total Endpoints:** 14  
+**Total Endpoints:** 16  
 **Authentication:** JWT Bearer Token (where required)
 
 ---

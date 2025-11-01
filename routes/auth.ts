@@ -179,8 +179,42 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
       return;
     }
 
+    // Query role from database (users table) to get actual role (admin/user)
+    // instead of Supabase role (authenticated)
+    console.log('🔍 /auth/me - Querying role from database for user ID:', req.user.id);
+    const roleQuery = 'SELECT role, username, name, email FROM users WHERE id = $1';
+    const roleResult = await authPool.query(roleQuery, [req.user.id]);
+    
+    console.log('📊 Database query result:', {
+      rowsCount: roleResult.rows.length,
+      row: roleResult.rows[0],
+      role: roleResult.rows[0]?.role
+    });
+    
+    const dbRole = roleResult.rows[0]?.role || req.user.role;
+    
+    // Also get other user info from database if available
+    const dbUser = roleResult.rows[0];
+    
+    const responseUser = {
+      id: req.user.id,
+      email: dbUser?.email || req.user.email || '',
+      username: dbUser?.username || req.user.username,
+      name: dbUser?.name || req.user.name,
+      role: dbRole, // Use role from database
+    };
+    
+    console.log('✅ /auth/me - Returning user data:', {
+      id: responseUser.id,
+      email: responseUser.email,
+      username: responseUser.username,
+      name: responseUser.name,
+      role: responseUser.role,
+      isAdmin: responseUser.role === 'admin'
+    });
+
     res.status(200).json({
-      user: req.user
+      user: responseUser
     });
 
   } catch (error) {
