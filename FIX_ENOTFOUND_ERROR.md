@@ -47,7 +47,7 @@ postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
 สำหรับ Vercel Serverless Functions แนะนำให้ใช้ **Connection Pooling**:
 
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 **วิธีหา Connection Pooling URL:**

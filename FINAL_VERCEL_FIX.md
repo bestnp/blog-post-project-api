@@ -10,7 +10,7 @@
 
 **Value ใหม่ (คัดลอกทั้งหมด):**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---
@@ -19,7 +19,7 @@ postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pool
 
 **Value ใหม่ (คัดลอกทั้งหมด):**
 ```
-postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---

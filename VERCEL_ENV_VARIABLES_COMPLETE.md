@@ -29,7 +29,7 @@ Environment: Production, Preview, Development (เลือกทั้งหม
 ### **3. DATABASE_URL** ⚠️ IMPORTANT!
 ```
 Name: DATABASE_URL
-Value: postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+Value: postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 Environment: Production, Preview, Development (เลือกทั้งหมด)
 ```
 ⚠️ **ต้อง:** Connection Pooling (pooler.supabase.com:6543)  
@@ -39,7 +39,7 @@ Environment: Production, Preview, Development (เลือกทั้งหม
 ### **4. AUTH_DATABASE_URL** ⚠️ IMPORTANT!
 ```
 Name: AUTH_DATABASE_URL
-Value: postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+Value: postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 Environment: Production, Preview, Development (เลือกทั้งหมด)
 ```
 ⚠️ **ต้อง:** Connection Pooling (pooler.supabase.com:6543)  

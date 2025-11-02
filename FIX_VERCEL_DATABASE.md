@@ -40,7 +40,7 @@
 
 **ตัวอย่างที่ได้:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ### **ขั้นตอนที่ 3: แทนที่ Password**
@@ -52,7 +52,7 @@ Replace `[PASSWORD]` ด้วย:
 
 **Connection string สุดท้าย:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ### **ขั้นตอนที่ 4: ทำเหมือนกันกับ Auth DB**

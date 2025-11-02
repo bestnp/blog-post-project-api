@@ -28,11 +28,11 @@ postgresql://postgres:_Blog%40post01@db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432/po
 
 **✅ ใหม่ (Connection Pooling - ทำงานกับ Vercel):**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 **การเปลี่ยนแปลง:**
-- `db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432` → `aws-0-ap-southeast-1.pooler.supabase.com:6543`
+- `db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432` → `aws-1-ap-southeast-1.pooler.supabase.com:6543`
 - `postgres:_Blog@post01` → `postgres.ywzvkyrmlggwhnzrfpdt:_Blog@post01`
 
 ---
@@ -46,7 +46,7 @@ postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/post
 
 **✅ ใหม่ (Connection Pooling):**
 ```
-postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---
@@ -91,7 +91,7 @@ curl https://your-app.vercel.app/assignments
 - [ ] ใช้ Connection Pooling (`pooler.supabase.com:6543`)
 - [ ] เปลี่ยน username: `postgres` → `postgres.PROJECT_REF`
 - [ ] เปลี่ยน port: `5432` → `6543`
-- [ ] เปลี่ยน hostname: `db.*.supabase.co` → `aws-0-ap-southeast-1.pooler.supabase.com`
+- [ ] เปลี่ยน hostname: `db.*.supabase.co` → `aws-1-ap-southeast-1.pooler.supabase.com`
 - [ ] Redeploy
 - [ ] ทดสอบ `/health` endpoint
 

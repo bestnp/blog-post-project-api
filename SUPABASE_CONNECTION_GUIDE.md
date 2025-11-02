@@ -30,7 +30,7 @@
 
 **ตัวอย่าง:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 #### **สำหรับ Authentication Database:**
@@ -59,7 +59,7 @@ postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-0-ap-southeast-1.poole
 
 **Format ที่ถูกต้อง:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 **ให้สังเกต:**
@@ -89,12 +89,12 @@ postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.p
 
 ### **Blog Posts Database:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ### **Auth Database:**
 ```
-postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---

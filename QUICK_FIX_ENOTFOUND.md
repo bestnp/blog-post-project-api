@@ -51,7 +51,7 @@ curl https://blog-post-project-api-five.vercel.app/assignments
 
 ### Connection Pooling (แนะนำ):
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_Blog%40post01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ### Direct Connection:

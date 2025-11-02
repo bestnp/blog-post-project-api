@@ -8,7 +8,7 @@
 ```
 "Tenant or user not found"
 Code: XX000
-Host: aws-0-ap-southeast-1.pooler.supabase.com:6543 ✅
+Host: aws-1-ap-southeast-1.pooler.supabase.com:6543 ✅
 ```
 
 ---
@@ -41,14 +41,14 @@ Host: aws-0-ap-southeast-1.pooler.supabase.com:6543 ✅
 
 **ใช้ Connection String จาก Supabase Dashboard:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:[PASSWORD]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 **Replace `[PASSWORD]` ด้วย:** `_BlogPost01`
 
 **Result:**
 ```
-postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---

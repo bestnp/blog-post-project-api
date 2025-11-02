@@ -9,7 +9,7 @@
 ```
 Error: Tenant or user not found
 Code: XX000
-Hostname: aws-0-ap-southeast-1.pooler.supabase.com:6543
+Hostname: aws-1-ap-southeast-1.pooler.supabase.com:6543
 ```
 
 **Local:** ✅ Working (ใช้ Direct Connection)  
