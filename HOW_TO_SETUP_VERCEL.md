@@ -41,21 +41,23 @@ Environment: Production, Preview, Development (เลือกทั้งหม
 #### **3. DATABASE_URL**
 ```
 Name: DATABASE_URL
-Value: postgresql://postgres:_BlogPost01@db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432/postgres
+Value: postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 Environment: Production, Preview, Development (เลือกทั้งหมด 3 อัน)
 ```
-⚠️ **สำคัญ:** ใช้ Direct Connection (`db.*.supabase.co:5432`) - Pooling ยังไม่ enable  
+⚠️ **สำคัญ:** ใช้ Connection Pooling (`pooler.supabase.com:6543`) สำหรับ Vercel Serverless  
+📝 **Username:** `postgres.ywzvkyrmlggwhnzrfpdt` (ไม่ใช่ `postgres`)  
 📝 **Password:** `_BlogPost01`  
-📝 **Host:** `db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432`  
+📝 **Host:** `aws-0-ap-southeast-1.pooler.supabase.com:6543`  
 คลิก **Save**
 
 #### **4. AUTH_DATABASE_URL**
 ```
 Name: AUTH_DATABASE_URL
-Value: postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/postgres
+Value: postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 Environment: Production, Preview, Development (เลือกทั้งหมด 3 อัน)
 ```
-⚠️ **สำคัญ:** ใช้ Direct Connection (`db.*.supabase.co:5432`) - Pooling ยังไม่ enable  
+⚠️ **สำคัญ:** ใช้ Connection Pooling (`pooler.supabase.com:6543`) สำหรับ Vercel Serverless  
+📝 **Username:** `postgres.lyexkvqojyggrhfoqqqo` (ไม่ใช่ `postgres`)  
 คลิก **Save**
 
 #### **5. SUPABASE_URL**

@@ -11,10 +11,10 @@
 
 ---
 
-## ✅ **Solution: Use Direct Connection (Temporary)**
+## ✅ **Solution: Use Connection Pooling**
 
-**Problem:** Connection Pooling ไม่ work  
-**Solution:** ใช้ Direct Connection แทน (ทำงานได้แล้ว)
+**Problem:** Direct Connection URL (`db.*.supabase.co`) ไม่ทำงานบน Vercel  
+**Solution:** ใช้ Connection Pooling (`pooler.supabase.com`) แทน
 
 ---
 
@@ -22,12 +22,12 @@
 
 ### **DATABASE_URL:**
 ```
-postgresql://postgres:_BlogPost01@db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432/postgres
+postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ### **AUTH_DATABASE_URL:**
 ```
-postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/postgres
+postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
 ```
 
 ---
@@ -37,11 +37,11 @@ postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/post
 1. ไปที่ **Vercel Dashboard** → **Settings** → **Environment Variables**
 2. แก้ไข `DATABASE_URL` เป็น:
    ```
-   postgresql://postgres:_BlogPost01@db.ywzvkyrmlggwhnzrfpdt.supabase.co:5432/postgres
+   postgresql://postgres.ywzvkyrmlggwhnzrfpdt:_BlogPost01@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
    ```
 3. แก้ไข `AUTH_DATABASE_URL` เป็น:
    ```
-   postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/postgres
+   postgresql://postgres.lyexkvqojyggrhfoqqqo:BlogPostAuth@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
    ```
 4. **Redeploy**
 
@@ -49,9 +49,10 @@ postgresql://postgres:BlogPostAuth@db.lyexkvqojyggrhfoqqqo.supabase.co:5432/post
 
 ## ⚠️ **Important**
 
-- Connection Pooling อาจจะยังไม่ได้ enable ใน Supabase project ของคุณ
-- Direct Connection (`db.*.supabase.co:5432`) **works for now**
-- ถ้าต้องการใช้ Pooling ให้ enable ใน Supabase Dashboard ก่อน
+- ✅ Connection Pooling (`pooler.supabase.com:6543`) ทำงานได้บน Vercel
+- ❌ Direct Connection (`db.*.supabase.co:5432`) **ไม่ทำงาน** บน Vercel Serverless
+- Username format: `postgres.PROJECT_REF` (ไม่ใช่ `postgres`)
+- Port: `6543` (ไม่ใช่ `5432`)
 
 ---
 
