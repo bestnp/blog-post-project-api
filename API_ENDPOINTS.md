@@ -7,7 +7,7 @@
 ## 📋 Overview
 
 **Base URL:** `http://localhost:3001`  
-**Total Endpoints:** 16  
+**Total Endpoints:** 23  
 **Authentication:** JWT Bearer Token (where required)
 
 ---
@@ -447,10 +447,152 @@ Authorization: Bearer <access_token>
 
 ---
 
-## 👤 Other Endpoints
+## 👤 Profile Endpoints
 
 ### 15. GET /profiles
-Get user profile.
+Get current user profile.
+
+**Auth Required:** ✅ Yes
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Success Response (200):**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "username": "johndoe",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "user",
+    "avatar_url": "https://...supabase.../storage/.../avatar.jpg"
+  }
+}
+```
+
+**Error Response (401):**
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
+### 16. PUT /profiles
+Update user profile (name, username).
+
+**Auth Required:** ✅ Yes
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "username": "newusername",
+  "name": "New Name"
+}
+```
+*Note: Both fields are optional, at least one must be provided*
+
+**Success Response (200):**
+```json
+{
+  "message": "Profile updated successfully",
+  "data": {
+    "id": "uuid",
+    "username": "newusername",
+    "name": "New Name",
+    "email": "user@example.com",
+    "role": "user",
+    "avatar_url": "https://..."
+  }
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "error": "Username is already taken"
+}
+```
+
+---
+
+### 17. PUT /profiles/avatar
+Upload and update user avatar.
+
+**Auth Required:** ✅ Yes
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+```
+
+**Form Data:**
+```
+avatarFile: [IMAGE FILE]
+```
+
+**Success Response (200):**
+```json
+{
+  "message": "Avatar updated successfully",
+  "data": {
+    "id": "uuid",
+    "username": "johndoe",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "role": "user",
+    "avatar_url": "https://...supabase.../storage/.../avatar.jpg"
+  }
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "error": "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed"
+}
+```
+
+---
+
+## 📂 Category Endpoints
+
+### 18. GET /categories
+Get all categories.
+
+**Auth Required:** ❌ No
+
+**Success Response (200):**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Technology"
+    },
+    {
+      "id": 2,
+      "name": "Lifestyle"
+    }
+  ]
+}
+```
+
+---
+
+### 19. GET /categories/:id
+Get single category by ID.
 
 **Auth Required:** ❌ No
 
@@ -458,15 +600,122 @@ Get user profile.
 ```json
 {
   "data": {
-    "name": "john",
-    "age": 20
+    "id": 1,
+    "name": "Technology"
   }
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "message": "Server could not find a requested category"
 }
 ```
 
 ---
 
-### 16. GET /health
+### 20. POST /categories
+Create a new category.
+
+**Auth Required:** ✅ Yes (Admin only)
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "name": "New Category"
+}
+```
+
+**Success Response (201):**
+```json
+{
+  "message": "Created category successfully",
+  "data": {
+    "id": 3,
+    "name": "New Category"
+  }
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "message": "Category with this name already exists"
+}
+```
+
+---
+
+### 21. PUT /categories/:id
+Update a category.
+
+**Auth Required:** ✅ Yes (Admin only)
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "name": "Updated Category"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "message": "Updated category successfully"
+}
+```
+
+**Error Response (404):**
+```json
+{
+  "message": "Server could not find a requested category to update"
+}
+```
+
+---
+
+### 22. DELETE /categories/:id
+Delete a category.
+
+**Auth Required:** ✅ Yes (Admin only)
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Success Response (200):**
+```json
+{
+  "message": "Deleted category successfully"
+}
+```
+
+**Error Response (400):**
+```json
+{
+  "message": "Cannot delete category because it is used in existing posts"
+}
+```
+
+---
+
+## 💚 Health Endpoint
+
+### 23. GET /health
 Health check endpoint.
 
 **Auth Required:** ❌ No
@@ -481,7 +730,7 @@ Health check endpoint.
 
 ---
 
-### 17. ANY /[other]
+### 24. ANY /[other]
 404 handler for unknown endpoints.
 
 **Success Response (404):**
@@ -511,8 +760,15 @@ Health check endpoint.
 | 12 | POST | `/assignments/upload` | ✅ | Create post (upload) |
 | 13 | PUT | `/assignments/:id` | ✅ | Update post |
 | 14 | DELETE | `/assignments/:id` | ✅ | Delete post |
-| 15 | GET | `/profiles` | ❌ | Get profile |
-| 16 | GET | `/health` | ❌ | Health check |
+| 15 | GET | `/profiles` | ✅ | Get current profile |
+| 16 | PUT | `/profiles` | ✅ | Update profile |
+| 17 | PUT | `/profiles/avatar` | ✅ | Update avatar |
+| 18 | GET | `/categories` | ❌ | Get all categories |
+| 19 | GET | `/categories/:id` | ❌ | Get single category |
+| 20 | POST | `/categories` | ✅ | Create category |
+| 21 | PUT | `/categories/:id` | ✅ | Update category |
+| 22 | DELETE | `/categories/:id` | ✅ | Delete category |
+| 23 | GET | `/health` | ❌ | Health check |
 | - | ANY | `/*` | - | 404 handler |
 
 ---
@@ -569,9 +825,9 @@ curl -X POST http://localhost:3001/assignments/upload \
 
 ## ✅ All Endpoints Tested and Working!
 
-**Total:** 16 endpoints  
-**Auth Required:** 9 endpoints  
-**Public:** 7 endpoints  
+**Total:** 23 endpoints  
+**Auth Required:** 13 endpoints  
+**Public:** 10 endpoints  
 
 **Status:** ✅ Production Ready
 
