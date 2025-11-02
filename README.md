@@ -365,14 +365,19 @@ blog-post-project-api/
 
 ## 📖 Documentation
 
-- **[API_ENDPOINTS.md](./API_ENDPOINTS.md)** - Complete API documentation
-- **[POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md)** - Postman testing guide (all endpoints)
+**Core Documentation:**
+- **[API_ENDPOINTS.md](./API_ENDPOINTS.md)** - Complete API documentation (all 16 endpoints)
+- **[POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md)** - Postman testing guide with examples
+
+**Architecture & Features:**
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Architecture overview and design patterns
 - **[AUTHENTICATION.md](./AUTHENTICATION.md)** - Authentication & authorization guide
 - **[MIDDLEWARE.md](./MIDDLEWARE.md)** - Middleware documentation
 - **[VALIDATION.md](./VALIDATION.md)** - Validation rules and error handling
 - **[UPLOAD.md](./UPLOAD.md)** - File upload guide
-- **[VERCEL_SETUP.md](./VERCEL_SETUP.md)** - Vercel deployment guide
+
+**Deployment:**
+- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Complete Vercel deployment guide with environment variables
 
 ---
 

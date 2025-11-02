@@ -309,9 +309,9 @@ router.put('/:id', protectUser, validatePost, async (req: Request<{ id: string }
 
 /**
  * POST /assignments/upload
- * Create a new blog post with file upload (Protected - requires authentication)
+ * Create a new blog post with file upload (Protected - requires admin authentication)
  */
-router.post('/upload', imageFileUpload, protectUser, async (req: Request, res: Response) => {
+router.post('/upload', imageFileUpload, protectAdmin, async (req: Request, res: Response) => {
   try {
     // 1) รับข้อมูลจาก request body และไฟล์ที่อัปโหลด
     const newPost = req.body;
