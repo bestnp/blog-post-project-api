@@ -1,14 +1,17 @@
 import { Pool } from 'pg';
 import { createClient } from '@supabase/supabase-js';
 
-// Validate DATABASE_URL before creating pool
-if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL environment variable is not set!');
+// Use POSTGRES_URL (from Vercel Supabase Integration) or fallback to DATABASE_URL
+const databaseUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+
+// Validate connection string before creating pool
+if (!databaseUrl) {
+  console.error('❌ DATABASE_URL or POSTGRES_URL environment variable is not set!');
 }
 
 // PostgreSQL Connection Pool for Blog Posts Database
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: databaseUrl,
   ssl: {
     rejectUnauthorized: false
   },
