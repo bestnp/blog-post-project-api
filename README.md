@@ -366,6 +366,7 @@ blog-post-project-api/
 ## 📖 Documentation
 
 - **[API_ENDPOINTS.md](./API_ENDPOINTS.md)** - Complete API documentation
+- **[POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md)** - Postman testing guide (all endpoints)
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Architecture overview and design patterns
 - **[AUTHENTICATION.md](./AUTHENTICATION.md)** - Authentication & authorization guide
 - **[MIDDLEWARE.md](./MIDDLEWARE.md)** - Middleware documentation
@@ -376,6 +377,16 @@ blog-post-project-api/
 ---
 
 ## 🧪 Testing
+
+### Testing with Postman (Recommended)
+
+📖 **See:** [POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md) for complete testing guide
+
+**Quick Start:**
+1. Import endpoints into Postman
+2. Test `/auth/login` to get access token
+3. Use token in Authorization header for protected routes
+4. Test all 16 endpoints
 
 ### Manual Testing with curl
 

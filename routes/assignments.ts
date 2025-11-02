@@ -194,10 +194,39 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
       data: result.rows[0]
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Database error:', error);
+    
+    let errorMessage = 'Server could not read post because database connection';
+    let errorHint = 'Please check DATABASE_URL environment variable and database server status';
+    
+    if (error.code === 'ENOTFOUND') {
+      errorMessage = 'Database host not found';
+      errorHint = 'Please check DATABASE_URL hostname and network connectivity';
+    } else if (error.code === 'XX000' || error.message?.includes('Tenant or user not found')) {
+      errorMessage = 'Database authentication failed or connection pooling issue';
+      errorHint = 'Please check DATABASE_URL credentials. For Vercel, use Direct Connection (db.*.supabase.co:5432) instead of Pooling';
+    } else if (error.code === 'ECONNREFUSED') {
+      errorMessage = 'Database connection refused';
+      errorHint = 'Database server may be down or firewall blocking connection';
+    } else if (error.code === '3D000') {
+      errorMessage = 'Database does not exist';
+      errorHint = 'Please check database name in DATABASE_URL';
+    } else if (error.message) {
+      errorMessage = `Database error: ${error.message}`;
+    }
+    
     res.status(500).json({
-      message: 'Server could not read post because database connection'
+      message: errorMessage,
+      error: error.message,
+      code: error.code,
+      hint: errorHint,
+      debug: process.env.NODE_ENV === 'development' ? {
+        code: error.code,
+        detail: error.detail,
+        hostname: error.hostname,
+        port: error.port,
+      } : undefined
     });
   }
 });
