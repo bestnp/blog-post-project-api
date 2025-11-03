@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
-import { supabase } from '../utils/db';
+import { supabase, supabaseStorage } from '../utils/db';
 import { authPool } from '../utils/db';
 import protectUser from '../middleware/protectUser';
 
@@ -159,7 +159,7 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
     }
 
     // 1) Define bucket and path for avatar in Supabase Storage
-    const bucketName = 'my-personal-blog';
+    const bucketName = 'blog-post-project';
     const filePath = `avatars/${userId}/${Date.now()}_${file.originalname}`;
 
     // 2) Check if Supabase is configured
@@ -187,7 +187,7 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
     console.log(`🔑 Supabase URL: ${process.env.SUPABASE_URL ? '✅ Set' : '❌ Missing'}`);
     console.log(`🔑 Service Role Key: ${process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Set' : '⚠️  Using ANON_KEY'}`);
     
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabaseStorage.storage
       .from(bucketName)
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
@@ -253,7 +253,7 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
     console.log('✅ Avatar uploaded successfully:', uploadData);
 
     // 3) Get public URL of uploaded file
-    const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(uploadData.path);
+    const { data: { publicUrl } } = supabaseStorage.storage.from(bucketName).getPublicUrl(uploadData.path);
 
     // 4) Update avatar URL in database
     const query = `
