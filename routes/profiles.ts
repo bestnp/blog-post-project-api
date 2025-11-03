@@ -187,7 +187,6 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
     if (uploadError) {
       console.error('❌ Storage upload error:', {
         message: uploadError.message,
-        statusCode: uploadError.statusCode,
         error: uploadError,
         bucketName,
         filePath,
@@ -207,7 +206,7 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
         userFriendlyMessage = 'File with this name already exists. Please try again.';
       } else if (uploadError.message?.includes('new row violates row-level security') || uploadError.message?.includes('RLS')) {
         userFriendlyMessage = 'Storage bucket permissions issue. Please check: 1) Bucket exists, 2) RLS policies allow uploads, 3) SUPABASE_SERVICE_ROLE_KEY is set in Vercel.';
-      } else if (uploadError.statusCode === '403' || uploadError.message?.includes('permission') || uploadError.message?.includes('Forbidden')) {
+      } else if (uploadError.message?.includes('permission') || uploadError.message?.includes('Forbidden') || uploadError.message?.includes('403')) {
         userFriendlyMessage = 'Permission denied. Please check: 1) SUPABASE_SERVICE_ROLE_KEY is set in Vercel environment variables, 2) Bucket RLS policies allow uploads.';
       } else if (uploadError.message?.includes('JWT')) {
         userFriendlyMessage = 'Authentication error. Please check SUPABASE_SERVICE_ROLE_KEY is correctly set in Vercel.';
