@@ -115,7 +115,30 @@ Environment: Production, Preview, Development (เลือกทั้งหม
 
 ---
 
-#### **7. FRONTEND_URL**
+#### **7. SUPABASE_SERVICE_ROLE_KEY** ⚠️ REQUIRED FOR FILE UPLOADS!
+```
+Name: SUPABASE_SERVICE_ROLE_KEY
+Value: (your-service-role-key-from-supabase)
+Environment: Production, Preview, Development (เลือกทั้งหมด)
+```
+
+⚠️ **CRITICAL:** Required for file uploads (avatar, post images) to bypass RLS (Row Level Security) policies.
+
+**Location:** Supabase Dashboard → Settings → API → service_role key (secret)
+
+**⚠️ Security Note:**
+- This key has **full access** to your Supabase project
+- **Never** expose it in frontend code
+- **Only** use in backend/server environments
+- It bypasses Row Level Security (RLS) policies
+
+**If using Vercel + Supabase Integration:** This key is automatically set. ✅
+
+**If NOT using Integration:** You must manually add this environment variable.
+
+---
+
+#### **8. FRONTEND_URL**
 ```
 Name: FRONTEND_URL
 Value: https://your-frontend.vercel.app
