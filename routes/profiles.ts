@@ -162,21 +162,70 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
     const bucketName = 'my-personal-blog';
     const filePath = `avatars/${userId}/${Date.now()}_${file.originalname}`;
 
-    // 2) Upload file to Supabase Storage
+    // 2) Check if Supabase is configured
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error('❌ Supabase credentials not configured');
+      return res.status(500).json({
+        error: 'Storage not configured',
+        message: 'Supabase credentials are missing. Please configure SUPABASE_URL and SUPABASE_ANON_KEY environment variables.'
+      });
+    }
+
+    // 3) Upload file to Supabase Storage
+    console.log(`📤 Uploading avatar to bucket: ${bucketName}, path: ${filePath}`);
+    console.log(`📦 File info: size=${file.buffer.length}, type=${file.mimetype}`);
+    console.log(`🔑 Supabase URL: ${process.env.SUPABASE_URL ? '✅ Set' : '❌ Missing'}`);
+    console.log(`🔑 Service Role Key: ${process.env.SUPABASE_SERVICE_ROLE_KEY ? '✅ Set' : '⚠️  Using ANON_KEY'}`);
+    
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(bucketName)
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
-        upsert: false
+        upsert: true // Allow overwriting existing files
       });
 
     if (uploadError) {
-      console.error('Storage upload error:', uploadError);
+      console.error('❌ Storage upload error:', {
+        message: uploadError.message,
+        error: uploadError,
+        bucketName,
+        filePath,
+        fileSize: file.buffer.length,
+        fileMimetype: file.mimetype,
+        hasSupabaseUrl: !!process.env.SUPABASE_URL,
+        hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      });
+      
+      // Provide more helpful error messages
+      let errorMessage = uploadError.message || 'Unknown storage error';
+      let userFriendlyMessage = errorMessage;
+      
+      if (uploadError.message?.includes('Bucket not found') || uploadError.message?.includes('does not exist')) {
+        userFriendlyMessage = `Bucket "${bucketName}" does not exist. Please create it in Supabase Storage > Storage section.`;
+      } else if (uploadError.message?.includes('The resource already exists')) {
+        userFriendlyMessage = 'File with this name already exists. Please try again.';
+      } else if (uploadError.message?.includes('new row violates row-level security') || uploadError.message?.includes('RLS')) {
+        userFriendlyMessage = 'Storage bucket permissions issue. Please check: 1) Bucket exists, 2) RLS policies allow uploads, 3) SUPABASE_SERVICE_ROLE_KEY is set in Vercel.';
+      } else if (uploadError.message?.includes('permission') || uploadError.message?.includes('Forbidden') || uploadError.message?.includes('403')) {
+        userFriendlyMessage = 'Permission denied. Please check: 1) SUPABASE_SERVICE_ROLE_KEY is set in Vercel environment variables, 2) Bucket RLS policies allow uploads.';
+      } else if (uploadError.message?.includes('JWT')) {
+        userFriendlyMessage = 'Authentication error. Please check SUPABASE_SERVICE_ROLE_KEY is correctly set in Vercel.';
+      }
+      
       return res.status(500).json({
         error: 'Failed to upload avatar to storage',
-        message: uploadError.message
+        message: userFriendlyMessage,
+        details: process.env.NODE_ENV === 'development' ? {
+          originalError: errorMessage,
+          bucketName,
+          filePath,
+          hasSupabaseUrl: !!process.env.SUPABASE_URL,
+          hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        } : undefined
       });
     }
+    
+    console.log('✅ Avatar uploaded successfully:', uploadData);
 
     // 3) Get public URL of uploaded file
     const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(uploadData.path);
