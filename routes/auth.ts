@@ -114,30 +114,96 @@ router.post('/login', async (req: Request<{}, {}, LoginInput>, res: Response) =>
   const { email, password } = req.body;
 
   try {
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        error: 'Email and password are required'
+      });
+    }
+
+    // Check if Supabase is configured
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+      console.error('❌ Supabase credentials not configured');
+      return res.status(500).json({
+        error: 'Authentication service not configured',
+        message: 'Supabase credentials are missing. Please configure SUPABASE_URL and SUPABASE_ANON_KEY environment variables.'
+      });
+    }
+
+    console.log('🔐 Login attempt:', { 
+      email, 
+      hasSupabaseUrl: !!process.env.SUPABASE_URL, 
+      hasAnonKey: !!process.env.SUPABASE_ANON_KEY,
+      supabaseUrl: process.env.SUPABASE_URL?.substring(0, 30) + '...' || 'missing',
+      anonKeyLength: process.env.SUPABASE_ANON_KEY?.length || 0,
+      anonKeyPrefix: process.env.SUPABASE_ANON_KEY?.substring(0, 20) || 'missing'
+    });
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.trim().toLowerCase(), // Normalize email
       password,
     });
 
     if (error) {
+      console.error('❌ Login error:', {
+        code: error.code,
+        message: error.message,
+        status: error.status
+      });
+
       // ตรวจสอบว่า error เกิดจากข้อมูลเข้าสู่ระบบไม่ถูกต้องหรือไม่
       if (
         error.code === 'invalid_credentials' ||
-        error.message.includes('Invalid login credentials')
+        error.code === 'email_not_confirmed' ||
+        error.message?.includes('Invalid login credentials') ||
+        error.message?.includes('Email not confirmed')
       ) {
         return res.status(400).json({
           error: "Your password is incorrect or this email doesn't exist",
+          message: error.message
         });
       }
-      return res.status(400).json({ error: error.message });
+
+      // Handle other Supabase auth errors
+      if (error.code === 'signup_disabled') {
+        return res.status(400).json({
+          error: 'Signup is disabled',
+          message: error.message
+        });
+      }
+
+      return res.status(400).json({ 
+        error: error.message || 'Login failed',
+        code: error.code
+      });
     }
+
+    if (!data.session) {
+      console.error('❌ No session returned from Supabase');
+      return res.status(500).json({
+        error: 'Login failed',
+        message: 'No session was created. Please try again.'
+      });
+    }
+
+    console.log('✅ Login successful:', { email, userId: data.user?.id });
 
     return res.status(200).json({
       message: 'Signed in successfully',
       access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      expires_at: data.session.expires_at,
+      user: {
+        id: data.user.id,
+        email: data.user.email
+      }
     });
   } catch (error) {
-    return res.status(500).json({ error: 'An error occurred during login' });
+    console.error('❌ Login exception:', error);
+    return res.status(500).json({ 
+      error: 'An error occurred during login',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 

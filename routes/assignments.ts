@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import pool from '../utils/db';
-import { supabase } from '../utils/db';
+import { supabase, supabaseStorage } from '../utils/db';
 import { CreatePostInput, UpdatePostInput } from '../types';
 import { validatePost } from '../validators/postValidator';
 import protectUser from '../middleware/protectUser';
@@ -333,11 +333,11 @@ router.post('/upload', imageFileUpload, protectAdmin, async (req: Request, res: 
     }
 
     // 2) กำหนด bucket และ path ที่จะเก็บไฟล์ใน Supabase
-    const bucketName = 'my-personal-blog';
+    const bucketName = 'blog-post-project';
     const filePath = `posts/${Date.now()}_${file.originalname}`;
 
     // 3) อัปโหลดไฟล์ไปยัง Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabaseStorage.storage
       .from(bucketName)
       .upload(filePath, file.buffer, {
         contentType: file.mimetype,
@@ -353,7 +353,7 @@ router.post('/upload', imageFileUpload, protectAdmin, async (req: Request, res: 
     }
 
     // 4) ดึง URL สาธารณะของไฟล์ที่อัปโหลด
-    const { data: { publicUrl } } = supabase.storage.from(bucketName).getPublicUrl(uploadData.path);
+    const { data: { publicUrl } } = supabaseStorage.storage.from(bucketName).getPublicUrl(uploadData.path);
 
     // 5) บันทึกข้อมูลโพสต์ลงในฐานข้อมูล
     const query = `

@@ -54,35 +54,48 @@ authPool.on('error', (err: Error) => {
   console.error('❌ Authentication database connection error:', err);
 });
 
-// Supabase Client for Authentication and Storage
-// For Storage operations, we need to use SERVICE_ROLE_KEY instead of ANON_KEY
-// to bypass RLS (Row Level Security) policies
+// Supabase Client Configuration
+// IMPORTANT: Authentication operations (login, signup) MUST use ANON_KEY
+// Storage operations should use SERVICE_ROLE_KEY to bypass RLS
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || '';
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-// Use SERVICE_ROLE_KEY for Storage operations (bypasses RLS)
-// Fallback to ANON_KEY if SERVICE_ROLE_KEY is not available
-const storageKey = supabaseServiceRoleKey || supabaseAnonKey;
-
-export const supabase = createClient(supabaseUrl, storageKey, {
+// Supabase Client for Authentication (MUST use ANON_KEY)
+// This is used for login, signup, getUser, etc.
+// Note: In serverless environments (Vercel), we disable persistSession and autoRefreshToken
+// because sessions are handled per-request, not persisted across requests
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
-    persistSession: true,
+    autoRefreshToken: false, // Disabled for serverless - sessions are stateless
+    persistSession: false, // Disabled for serverless - no localStorage/cookies needed
+    detectSessionInUrl: false,
+    storage: undefined // No storage adapter needed for serverless
+  }
+});
+
+// Supabase Client for Storage operations (uses SERVICE_ROLE_KEY if available)
+// This bypasses RLS policies for file uploads
+const storageKey = supabaseServiceRoleKey || supabaseAnonKey;
+export const supabaseStorage = createClient(supabaseUrl, storageKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
     detectSessionInUrl: false
   }
 });
 
 // Log Supabase connection
-if (supabaseUrl && storageKey) {
-  console.log('✅ Supabase client initialized');
-  if (supabaseServiceRoleKey && supabaseServiceRoleKey !== supabaseAnonKey) {
-    console.log('✅ Using SERVICE_ROLE_KEY for Storage operations');
+if (supabaseUrl && supabaseAnonKey) {
+  console.log('✅ Supabase client initialized for Authentication');
+  if (supabaseServiceRoleKey) {
+    console.log('✅ Supabase Storage client initialized with SERVICE_ROLE_KEY');
   } else {
-    console.warn('⚠️  Using ANON_KEY for Storage (may have permission issues). Consider setting SUPABASE_SERVICE_ROLE_KEY');
+    console.warn('⚠️  Supabase Storage using ANON_KEY (may have permission issues). Consider setting SUPABASE_SERVICE_ROLE_KEY');
   }
 } else {
   console.warn('⚠️  Supabase credentials not found in environment variables');
+  console.warn('   Required: SUPABASE_URL, SUPABASE_ANON_KEY');
 }
 
 // Export both pools
