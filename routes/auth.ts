@@ -251,7 +251,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
     // Query role from database (users table) to get actual role (admin/user)
     // instead of Supabase role (authenticated)
     console.log('🔍 /auth/me - Querying role from database for user ID:', req.user.id);
-    const roleQuery = 'SELECT role, username, name, email FROM users WHERE id = $1';
+    const roleQuery = 'SELECT role, username, name, email, avatar_url FROM users WHERE id = $1';
     const roleResult = await authPool.query(roleQuery, [req.user.id]);
     
     console.log('📊 Database query result:', {
@@ -271,6 +271,8 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
       username: dbUser?.username || req.user.username,
       name: dbUser?.name || req.user.name,
       role: dbRole, // Use role from database
+      avatar_url: dbUser?.avatar_url || (req.user as any)?.avatar_url || null,
+      avatar: dbUser?.avatar_url || (req.user as any)?.avatar || null,
     };
     
     console.log('✅ /auth/me - Returning user data:', {
@@ -279,6 +281,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
       username: responseUser.username,
       name: responseUser.name,
       role: responseUser.role,
+      avatar_url: responseUser.avatar_url,
       isAdmin: responseUser.role === 'admin'
     });
 
