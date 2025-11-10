@@ -17,7 +17,6 @@
 - [Running the Server](#-running-the-server)
 - [API Endpoints](#-api-endpoints)
 - [Project Structure](#-project-structure)
-- [Documentation](#-documentation)
 
 ---
 
@@ -363,29 +362,9 @@ blog-post-project-api/
 
 ---
 
-## 📖 Documentation
-
-**Core Documentation:**
-- **[API_ENDPOINTS.md](./API_ENDPOINTS.md)** - Complete API documentation (all 16 endpoints)
-- **[POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md)** - Postman testing guide with examples
-
-**Architecture & Features:**
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Architecture overview and design patterns
-- **[AUTHENTICATION.md](./AUTHENTICATION.md)** - Authentication & authorization guide
-- **[MIDDLEWARE.md](./MIDDLEWARE.md)** - Middleware documentation
-- **[VALIDATION.md](./VALIDATION.md)** - Validation rules and error handling
-- **[UPLOAD.md](./UPLOAD.md)** - File upload guide
-
-**Deployment:**
-- **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Complete Vercel deployment guide with environment variables
-
----
-
 ## 🧪 Testing
 
 ### Testing with Postman (Recommended)
-
-📖 **See:** [POSTMAN_GUIDE.md](./POSTMAN_GUIDE.md) for complete testing guide
 
 **Quick Start:**
 1. Import endpoints into Postman
@@ -470,8 +449,6 @@ git push origin api-server
 
 3. **Environment Variables:**
    Set all variables from `.env` in Vercel Dashboard
-
-**See:** [VERCEL_SETUP.md](./VERCEL_SETUP.md) for detailed instructions
 
 ---
 
