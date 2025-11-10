@@ -57,15 +57,22 @@ authPool.on('error', (err: Error) => {
 // Supabase Client Configuration
 // IMPORTANT: Authentication operations (login, signup) MUST use ANON_KEY
 // Storage operations should use SERVICE_ROLE_KEY to bypass RLS
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAuthUrl = process.env.SUPABASE_AUTH_URL || process.env.SUPABASE_URL || '';
+const supabaseAuthAnonKey = process.env.SUPABASE_AUTH_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+
+const supabaseStorageUrl = process.env.SUPABASE_STORAGE_URL || process.env.SUPABASE_URL || supabaseAuthUrl;
+const supabaseStorageServiceRoleKey =
+  process.env.SUPABASE_STORAGE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseStorageAnonKey =
+  process.env.SUPABASE_STORAGE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  supabaseAuthAnonKey;
 
 // Supabase Client for Authentication (MUST use ANON_KEY)
 // This is used for login, signup, getUser, etc.
 // Note: In serverless environments (Vercel), we disable persistSession and autoRefreshToken
 // because sessions are handled per-request, not persisted across requests
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseAuthUrl, supabaseAuthAnonKey, {
   auth: {
     autoRefreshToken: false, // Disabled for serverless - sessions are stateless
     persistSession: false, // Disabled for serverless - no localStorage/cookies needed
@@ -76,8 +83,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Supabase Client for Storage operations (uses SERVICE_ROLE_KEY if available)
 // This bypasses RLS policies for file uploads
-const storageKey = supabaseServiceRoleKey || supabaseAnonKey;
-export const supabaseStorage = createClient(supabaseUrl, storageKey, {
+const storageKey = supabaseStorageServiceRoleKey || supabaseStorageAnonKey;
+export const supabaseStorage = createClient(supabaseStorageUrl, storageKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -86,16 +93,23 @@ export const supabaseStorage = createClient(supabaseUrl, storageKey, {
 });
 
 // Log Supabase connection
-if (supabaseUrl && supabaseAnonKey) {
-  console.log('✅ Supabase client initialized for Authentication');
-  if (supabaseServiceRoleKey) {
-    console.log('✅ Supabase Storage client initialized with SERVICE_ROLE_KEY');
+if (supabaseAuthUrl && supabaseAuthAnonKey) {
+  console.log('✅ Supabase client initialized for Authentication', {
+    project: supabaseAuthUrl,
+    hasCustomAuthProject: !!process.env.SUPABASE_AUTH_URL
+  });
+  if (supabaseStorageServiceRoleKey || supabaseStorageAnonKey) {
+    console.log('✅ Supabase Storage client initialized', {
+      project: supabaseStorageUrl,
+      usingServiceRole: !!supabaseStorageServiceRoleKey,
+      hasCustomStorageProject: !!process.env.SUPABASE_STORAGE_URL
+    });
   } else {
-    console.warn('⚠️  Supabase Storage using ANON_KEY (may have permission issues). Consider setting SUPABASE_SERVICE_ROLE_KEY');
+    console.warn('⚠️  Supabase Storage key not found. Set SUPABASE_STORAGE_SERVICE_ROLE_KEY or SUPABASE_STORAGE_ANON_KEY');
   }
 } else {
   console.warn('⚠️  Supabase credentials not found in environment variables');
-  console.warn('   Required: SUPABASE_URL, SUPABASE_ANON_KEY');
+  console.warn('   Required: SUPABASE_AUTH_URL and SUPABASE_AUTH_ANON_KEY (or legacy SUPABASE_URL/SUPABASE_ANON_KEY)');
 }
 
 // Export both pools
