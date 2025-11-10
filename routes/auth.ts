@@ -121,22 +121,25 @@ router.post('/login', async (req: Request<{}, {}, LoginInput>, res: Response) =>
       });
     }
 
+    const authUrl = process.env.SUPABASE_AUTH_URL || process.env.SUPABASE_URL;
+    const authAnonKey = process.env.SUPABASE_AUTH_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+
     // Check if Supabase is configured
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    if (!authUrl || !authAnonKey) {
       console.error('❌ Supabase credentials not configured');
       return res.status(500).json({
         error: 'Authentication service not configured',
-        message: 'Supabase credentials are missing. Please configure SUPABASE_URL and SUPABASE_ANON_KEY environment variables.'
+        message: 'Supabase credentials are missing. Please configure SUPABASE_AUTH_URL and SUPABASE_AUTH_ANON_KEY (or legacy SUPABASE_URL/SUPABASE_ANON_KEY) environment variables.'
       });
     }
 
     console.log('🔐 Login attempt:', { 
       email, 
-      hasSupabaseUrl: !!process.env.SUPABASE_URL, 
-      hasAnonKey: !!process.env.SUPABASE_ANON_KEY,
-      supabaseUrl: process.env.SUPABASE_URL?.substring(0, 30) + '...' || 'missing',
-      anonKeyLength: process.env.SUPABASE_ANON_KEY?.length || 0,
-      anonKeyPrefix: process.env.SUPABASE_ANON_KEY?.substring(0, 20) || 'missing'
+      hasSupabaseUrl: !!authUrl, 
+      hasAnonKey: !!authAnonKey,
+      supabaseUrl: authUrl?.substring(0, 30) + '...' || 'missing',
+      anonKeyLength: authAnonKey?.length || 0,
+      anonKeyPrefix: authAnonKey?.substring(0, 20) || 'missing'
     });
 
     const { data, error } = await supabase.auth.signInWithPassword({
