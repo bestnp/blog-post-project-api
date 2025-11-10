@@ -130,8 +130,12 @@ router.put('/', protectUser, async (req: Request, res: Response) => {
 /**
  * PUT /profiles/avatar
  * Upload and update user avatar (Protected - requires authentication)
+ * 
+ * Note: Middleware order matters:
+ * 1. protectUser - Verify authentication first
+ * 2. avatarFileUpload - Parse multipart/form-data after auth check
  */
-router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: Response) => {
+router.put('/avatar', protectUser, avatarFileUpload, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -143,8 +147,15 @@ router.put('/avatar', avatarFileUpload, protectUser, async (req: Request, res: R
 
     // Check if file exists
     if (!req.files || !('avatarFile' in req.files) || !req.files.avatarFile || (req.files.avatarFile as Express.Multer.File[]).length === 0) {
+      console.error('❌ Avatar upload error: No file received', {
+        hasFiles: !!req.files,
+        filesKeys: req.files ? Object.keys(req.files) : [],
+        hasAvatarFile: req.files && 'avatarFile' in req.files,
+        contentType: req.headers['content-type']
+      });
       return res.status(400).json({
-        error: 'Avatar file is required'
+        error: 'Avatar file is required',
+        message: 'Please make sure to send the file with field name "avatarFile" in multipart/form-data format'
       });
     }
 
